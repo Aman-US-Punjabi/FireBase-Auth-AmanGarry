@@ -147,13 +147,13 @@ func verifyIDToken(idToken: String) {
         
         // Validate header's keys and values
         // get the kid from the header
-        guard let kid = header["kid"]?.string else {
+        guard let kid = header[KeyIDHeader.name]?.string else {
             print("Firebase ID token has no \"kid\" claim.")
             return
         }
         
         // get algorithm from the header
-        guard let alg = header["alg"]?.string else {
+        guard let alg = header[AlgorithmHeader.name]?.string else {
             print("Firebase ID token has no \"alg\" claim.")
             return
         }
