@@ -13,6 +13,9 @@ import JWT
 // Valid Algorithm for FireBase Token  verification
 let ALGORITHM = "RS256"
 
+// Put your project id
+let PROJECT_ID = "Project Id"
+
 // Url to get Public keys from FireBase
 let CLIENT_CERT_URL = "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com"
 
@@ -23,7 +26,6 @@ let httpClient = EngineClient.factory
 var publicKeysExpiresAt : Date?          = nil
 var publicKeys : [String : String]?     = nil
 
-let PROJECT_ID = "nomadic-archway-110115"
 
 func getPublicKeysExpireDataFrmCacheControl(from cacheControl: String) -> Date? {
     let cacheControlParts = cacheControl.components(separatedBy: ", ")
