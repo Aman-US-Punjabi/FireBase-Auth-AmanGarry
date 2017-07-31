@@ -222,6 +222,21 @@ func verifyIDToken(idToken: String) {
         let kidValue = keyPair[kid]
         
         // Verify JWT Token with kidValue and tokenId
+        let kidBytes = kidValue.makeBytes().base64Decoded
+        
+        do {
+            
+            let signer = try RS256(key: kidBytes)
+            do {
+                try jwt.verifySignature(using: signer)
+                // Successfully verified if got here
+            } catch {
+                // To DO
+                print("JWT verification failed")
+            }
+        } catch {
+            print("Unable to RS256 the kidRytes")
+        }
         
     } catch {
         print("Can't intialize the JWT, Invalid idToken passed.")
