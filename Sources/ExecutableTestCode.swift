@@ -10,14 +10,6 @@ import Vapor
 import HTTP
 import JWT
 
-
-// Add Your token to test
-let idToken = "Add token"
-
-// Add Your Firebase Project Id
-let PROJECT_ID = "nomadic-archway-110115"
-
-
 // Valid Algorithm for FireBase Token  verification
 let ALGORITHM = "RS256"
 
@@ -30,6 +22,8 @@ let httpClient = EngineClient.factory
 // public keys and expiration time
 var publicKeysExpiresAt : Date?          = nil
 var publicKeys : [String : String]?     = nil
+
+let PROJECT_ID = "nomadic-archway-110115"
 
 func getPublicKeysExpireDataFrmCacheControl(from cacheControl: String) -> Date? {
     let cacheControlParts = cacheControl.components(separatedBy: ", ")
@@ -221,18 +215,14 @@ func verifyIDToken(idToken: String) {
         
         let kidValue = keyPair[kid]
         
+        // Verify JWT Token with kidValue and tokenId
         
     } catch {
         print("Can't intialize the JWT, Invalid idToken passed.")
     }
-    
-    // verify signature using JWT
-    //    jwt.verifySignature(using: HS256(key: "SIGNING_KEY".makeBytes()))
-    
-    
 }
 
 
+let idToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjA4MjZhZDk1NWFhZTI0MjBjODdiOWNlNGRjODU4MDAxNTljOTVhMmIifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vbm9tYWRpYy1hcmNod2F5LTExMDExNSIsImF1ZCI6Im5vbWFkaWMtYXJjaHdheS0xMTAxMTUiLCJhdXRoX3RpbWUiOjE1MDE0NDgyNjEsInVzZXJfaWQiOiJPbUVpZmF4bW5YTlM0bDRTWUJYQXdrY0Q5WnExIiwic3ViIjoiT21FaWZheG1uWE5TNGw0U1lCWEF3a2NEOVpxMSIsImlhdCI6MTUwMTQ0ODI2MiwiZXhwIjoxNTAxNDUxODYyLCJwaG9uZV9udW1iZXIiOiIrMTQyNTY3ODU4NTIiLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7InBob25lIjpbIisxNDI1Njc4NTg1MiJdfSwic2lnbl9pbl9wcm92aWRlciI6InBob25lIn19.fBDUxQpzKMIlh3IAAz8y4BH_juXU6ksS5NdnqeZeYZC3NIkwNG9X4aZ5NlYKK833krUZ2_xKosqwFzxqW9ul2hZV-tKkPZHDf16DJ-anBjMHQVlz7hx2jSHph_YmbU1jTalCRnIvf7CDOTQ6RoBJOxktE1E26guSIdEzsMZwvzO3e5xq7tgvd53NF7ZVXAzJGktMB0gIYxiS8Zkjq4VnHQD7X8CYgp7EnJMuYdMSTT-Qhn8yBo1B--A2bsftgSI90kNDlO5MXFd2LUxKkmnw17MZhP2j1VQyfNpP5OFpLlh_2QTfOyOqTQC2LbyjS67iJbXmK8_eIPUanmoK1Z-USQ"
+
 verifyIDToken(idToken: idToken)
-
-
