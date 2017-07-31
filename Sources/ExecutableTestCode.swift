@@ -10,11 +10,15 @@ import Vapor
 import HTTP
 import JWT
 
-// Valid Algorithm for FireBase Token  verification
-let ALGORITHM = "RS256"
+// Put your token
+let idToken = "Your token"
 
 // Put your project id
 let PROJECT_ID = "Project Id"
+
+// Valid Algorithm for FireBase Token  verification
+let ALGORITHM = "RS256"
+
 
 // Url to get Public keys from FireBase
 let CLIENT_CERT_URL = "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com"
@@ -223,8 +227,5 @@ func verifyIDToken(idToken: String) {
         print("Can't intialize the JWT, Invalid idToken passed.")
     }
 }
-
-
-let idToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjA4MjZhZDk1NWFhZTI0MjBjODdiOWNlNGRjODU4MDAxNTljOTVhMmIifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vbm9tYWRpYy1hcmNod2F5LTExMDExNSIsImF1ZCI6Im5vbWFkaWMtYXJjaHdheS0xMTAxMTUiLCJhdXRoX3RpbWUiOjE1MDE0NDgyNjEsInVzZXJfaWQiOiJPbUVpZmF4bW5YTlM0bDRTWUJYQXdrY0Q5WnExIiwic3ViIjoiT21FaWZheG1uWE5TNGw0U1lCWEF3a2NEOVpxMSIsImlhdCI6MTUwMTQ0ODI2MiwiZXhwIjoxNTAxNDUxODYyLCJwaG9uZV9udW1iZXIiOiIrMTQyNTY3ODU4NTIiLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7InBob25lIjpbIisxNDI1Njc4NTg1MiJdfSwic2lnbl9pbl9wcm92aWRlciI6InBob25lIn19.fBDUxQpzKMIlh3IAAz8y4BH_juXU6ksS5NdnqeZeYZC3NIkwNG9X4aZ5NlYKK833krUZ2_xKosqwFzxqW9ul2hZV-tKkPZHDf16DJ-anBjMHQVlz7hx2jSHph_YmbU1jTalCRnIvf7CDOTQ6RoBJOxktE1E26guSIdEzsMZwvzO3e5xq7tgvd53NF7ZVXAzJGktMB0gIYxiS8Zkjq4VnHQD7X8CYgp7EnJMuYdMSTT-Qhn8yBo1B--A2bsftgSI90kNDlO5MXFd2LUxKkmnw17MZhP2j1VQyfNpP5OFpLlh_2QTfOyOqTQC2LbyjS67iJbXmK8_eIPUanmoK1Z-USQ"
 
 verifyIDToken(idToken: idToken)
