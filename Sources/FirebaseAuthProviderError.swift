@@ -124,31 +124,31 @@ extension FirebaseAuthProviderError: Debuggable {
         case  .invalidHeaderAlg:
             return "Firebase ID token has incorrect algorithm." + message
         case .noHeaderCacheControl:
-            return "Unable to get Firebase \'Cache-Control\' from header."
+            return "Unable to get Firebase \'Cache-Control\' from header." + message
         case .noHeaderMaxAge:
-            return "Unable to get Firebase \'max-age\' from header Cache-Control."
+            return "Unable to get Firebase \'max-age\' from header Cache-Control." + message
             
         case .noVerifiedJWT:
-            return "JWT verification failed"
+            return "JWT verification failed" + message
         case .noJWTSigner:
-            return "Unable to get RS256 Signer for the kid Bytes"
+            return "Unable to get RS256 Signer for the kid Bytes" + message
         case .noJWT:
-            return "Can't intialize the JWT, Invalid idToken passed."
+            return "Can't intialize the JWT, Invalid idToken passed." + message
             
         case .noOkResponse:
-            return "Please try again, Unsuccessful response, not 200 from the Google url(firebase)."
+            return "Please try again, Unsuccessful response, not 200 from the Google url(firebase)." + message
         case .noResponse:
-            return "Unable to make request to url, Please try again."
+            return "Unable to make request to url, Please try again." + message
         case .noPayload:
-            return "Unable to get response payload."
+            return "Unable to get response payload." + message
         case .noHeader:
-            return "Unable to get respose header."
+            return "Unable to get respose header." + message
         case .invalidToken:
-            return "Invalid token for JWT"
+            return "Invalid token for JWT" + message
         case .noKidValue:
-            return "Unable to get KidValue"
+            return "Unable to get KidValue" + message
         case .noPublicKeysFetched:
-            return "Kid values are not available from Firebase url"
+            return "Kid values are not available from Firebase url" + message
         }
     }
     

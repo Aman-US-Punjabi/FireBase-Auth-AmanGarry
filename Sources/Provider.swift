@@ -18,7 +18,7 @@ public final class Provider: Vapor.Provider {
     
     public convenience init(config: Config) throws {
         guard let firebaseAuthConfig = config["firebaseauth"] else {
-            throw ConfigError.missingFile["firebaseauth"]
+            throw ConfigError.missingFile("firebaseauth")
         }
         
         guard let projectId = firebaseAuthConfig["projectId"]?.string else {
