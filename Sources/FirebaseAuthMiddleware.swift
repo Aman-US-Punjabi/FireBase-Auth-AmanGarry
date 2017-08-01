@@ -22,6 +22,8 @@ public final class FirebaseAuthMiddleware: Middleware {
         
         print(response)
         
+        //
+        
 //        try firebaseAuthAmanGarry.verifyIDToken(projectId: <#T##String#>, idToken: <#T##String#>)
         
         return response
