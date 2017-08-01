@@ -16,9 +16,9 @@ let idToken = "Your token"
 // Put your project id
 let PROJECT_ID = "Project Id"
 
+
 // Valid Algorithm for FireBase Token  verification
 let ALGORITHM = "RS256"
-
 
 // Url to get Public keys from FireBase
 let CLIENT_CERT_URL = "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com"
@@ -27,11 +27,10 @@ let CLIENT_CERT_URL = "https://www.googleapis.com/robot/v1/metadata/x509/securet
 let httpClient = EngineClient.factory
 
 // public keys and expiration time
-var publicKeysExpiresAt : Date?          = nil
+var publicKeysExpiresAt : Date?         = nil
 var publicKeys : [String : String]?     = nil
 
-
-func getPublicKeysExpireDataFrmCacheControl(from cacheControl: String) -> Date? {
+func getPublicKeysExpireDateFrmCacheControl(from cacheControl: String) throws -> Date? {
     let cacheControlParts = cacheControl.components(separatedBy: ", ")
     for part in cacheControlParts {
         let subParts = part.split(separator: "=")
@@ -46,201 +45,175 @@ func getPublicKeysExpireDataFrmCacheControl(from cacheControl: String) -> Date? 
             }
         }
     }
-    return nil
+    throw FirebaseAuthProviderError.noHeaderMaxAge
 }
 
 // Fetches the public keys from the Google certs
-func fetchPublicKeys() -> (errors: [String]?, keys: [String:String]?) {
-    var keyPairs : [String : String] = [:]
-    var errors: [String] = []
+func fetchPublicKeys() throws {
     
     // Check if publicKeys already exists, publicKeyExpiresAt already exists
     // and publicKeysExpiresAt time is still valid, then return already existing
     // publicKeys no need to fetch again, as already existing publicKeys are valid.
     if let keys =  publicKeys, let keysExpiresAt = publicKeysExpiresAt, Date() < keysExpiresAt {
-        return (errors, keys)
+        publicKeys = keys
+        return
     }
     
     // if keys expired then fetch new keys
+    
+    // Get response from url
+    let firebaseResponse : Response
     do {
-        let firebaseResponse = try httpClient.get(CLIENT_CERT_URL)
-        
-        // if response is not ok or 200 then return nil keys
-        if firebaseResponse.status.hashValue != 200 {
-            // Return nil
-            errors.append("Please try again, Unsuccessful response!")
-            publicKeys = nil
-            return (errors, nil)
-        }
-        
-        // Get Cache-Control value from header, if unable to do so,
-        // then return nil keys
-        guard let cacheControl = firebaseResponse.headers["Cache-Control"] else {
-            errors.append("Unable to get Firebase \'Cache-Control\' from header!")
-            publicKeys = nil
-            return (errors, nil)
-        }
-        print(cacheControl)
-        
-        guard let publicKeysExpiresAtDate = getPublicKeysExpireDataFrmCacheControl(from: cacheControl) else {
-            // Unable to get expirationDate
-            errors.append("Unable to get Firebase \'max-age\' from header Cache-Control!")
-            publicKeys = nil
-            return (errors, nil)
-        }
-        
-        publicKeysExpiresAt = publicKeysExpiresAtDate
-        
-        //        firebaseResponse.headers.forEach({ (key, value) in
-        //            print("Key: \(key), Value: \(value)")
-        //        })
-        
-        if let jsonData = firebaseResponse.json {
-            if let jsonDict = jsonData.object {
-                for (key, value) in jsonDict {
-                    if let value = value.string {
-                        keyPairs[key] = value
-                    }
-                }
-                if !keyPairs.isEmpty {
-                    publicKeys = keyPairs
-                    return (nil, keyPairs)
+        firebaseResponse = try httpClient.get(CLIENT_CERT_URL)
+    } catch {
+        throw FirebaseAuthProviderError.noResponse
+    }
+    
+    // if response is not ok or 200 then return nil keys
+    if firebaseResponse.status.hashValue != 200 {
+        // Return nil
+        throw FirebaseAuthProviderError.noOkResponse
+    }
+    
+    // Get Cache-Control value from header, if unable to do so,
+    // then return nil keys
+    guard let cacheControl = firebaseResponse.headers["Cache-Control"] else {
+        throw FirebaseAuthProviderError.noHeaderCacheControl
+    }
+    
+    let publicKeysExpiresAtDate = try getPublicKeysExpireDateFrmCacheControl(from: cacheControl)
+    
+    // Set the new expiration time value for the public keys
+    publicKeysExpiresAt = publicKeysExpiresAtDate
+    
+    // get all keys and their values
+    if let jsonData = firebaseResponse.json {
+        if let jsonDict = jsonData.object {
+            var keyPairs : [String:String] = [:]
+            for (key, value) in jsonDict {
+                if let value = value.string {
+                    keyPairs[key] = value
                 }
             }
+            if !keyPairs.isEmpty {
+                publicKeys = keyPairs
+                return
+            }
         }
-    } catch {
-        print("In catch")
     }
-    return (nil, nil)
 }
 
-func verifyIDToken(idToken: String) {
+func verifyIDToken(idToken: String) throws {
     if idToken == "" {
         // TO DO Thow error Invalid IdToken
-        return
+        throw FirebaseAuthProviderError.invalidToken
     }
     
     // Get firebase project Id
     
     // Decodes a token string into a JWT using JWT
+    let jwt : JWT
     do {
-        let jwt = try JWT(token: idToken)
-        print("---------------------------")
-        print(jwt)
-        print("---------------------------")
-        
-        // Get header
-        guard let header = jwt.headers.object else {
-            print("Unable to get respose header.")
-            return
-        }
-        
-        // Get Payload
-        guard let payload = jwt.payload.object else {
-            print("Unable to get response payload.")
-            return
-        }
-        
-        let projectIdMatchMessage = " Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK."
-        
-        let verifyIdTokenDocsMessage = " See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token."
-        
-        // Validate header's keys and values
-        // get the kid from the header
-        guard let kid = header[KeyIDHeader.name]?.string else {
-            print("Firebase ID token has no \"kid\" claim.")
-            return
-        }
-        
-        // get algorithm from the header
-        guard let alg = header[AlgorithmHeader.name]?.string else {
-            print("Firebase ID token has no \"alg\" claim.")
-            return
-        }
-        // if algorithm do not match then show error
-        if alg != ALGORITHM {
-            print("Firebase ID token has incorrect algorithm. Expected \'\(ALGORITHM)\' but got \'\(alg)\'")
-            return
-        }
-        
-        print("Alg: \(alg) \nKid: \(kid)")
-        
-        // Validate payload keys and payload
-        guard let aud = payload[AudienceClaim.name]?.string else {
-            print("Firebase ID token has no \"aud\" claim.")
-            return
-        }
-        if aud != PROJECT_ID {
-            print("Firebase ID token has incorrect \"aud\" (audience) claim. Expected \'\(PROJECT_ID)\' but got \'\(aud)\'" + projectIdMatchMessage + verifyIdTokenDocsMessage)
-        }
-        
-        guard let iss = payload[IssuerClaim.name]?.string else {
-            print("Firebase ID token has no \'iss\' claim.")
-            return
-        }
-        if iss != "https://securetoken.google.com/\(PROJECT_ID)" {
-            print("Firebase ID token has incorrect \'iss\' claim. Expected https://securetoken.google.com/\(PROJECT_ID). But got \'\(iss)\'."  + projectIdMatchMessage + verifyIdTokenDocsMessage)
-        }
-        
-        guard let sub = payload[SubjectClaim.name]?.string else {
-            print("Firebase ID token has no \'sub\' claim." + verifyIdTokenDocsMessage)
-            return
-        }
-        if sub == "" {
-            print("Firebase ID token has an empty string \'sub\' (subject) claim." + verifyIdTokenDocsMessage)
-        } else if sub.characters.count > 128 {
-            print("Firebase ID token has string \'sub\' (subject) claim longer than 128 characters." + verifyIdTokenDocsMessage)
-        }
-        
-        guard let exp = payload[ExpirationTimeClaim.name]?.string else {
-            print("Firebase ID token has no \'exp\' (expiration time) claim." + projectIdMatchMessage + verifyIdTokenDocsMessage)
-            return
-        }
-        // TODO Check exp (expiration time) in seconds Must be in the future.
-        
-        guard let iat = payload[IssuedAtClaim.name]?.string else {
-            print("Firebase ID token has no \'iat\' (issued-at time) claim." + projectIdMatchMessage + verifyIdTokenDocsMessage)
-            return
-        }
-        // TODO Check iat (issued-at time) in seconds Must be in the past.
-        
-        // fetch all public keys
-        let keyResult = fetchPublicKeys()
-        
-        // If error occured while fetching keys
-        // return error
-        if let errors = keyResult.errors {
-            print(errors)
-            return
-        }
-        
-        guard let keyPair = keyResult.keys else {
-            print()
-            return
-        }
-        
-        let kidValue = keyPair[kid]
-        
-        // Verify JWT Token with kidValue and tokenId
-        let kidBytes = kidValue.makeBytes().base64Decoded
-        
-        do {
-            
-            let signer = try RS256(key: kidBytes)
-            do {
-                try jwt.verifySignature(using: signer)
-                // Successfully verified if got here
-            } catch {
-                // To DO
-                print("JWT verification failed")
-            }
-        } catch {
-            print("Unable to RS256 the kidRytes")
-        }
-        
+        jwt = try JWT(token: idToken)
     } catch {
-        print("Can't intialize the JWT, Invalid idToken passed.")
+        throw FirebaseAuthProviderError.noJWT
+    }
+    print("---------------------------")
+    print(jwt)
+    print("---------------------------")
+    
+    // Get header
+    guard let header = jwt.headers.object else {
+        throw FirebaseAuthProviderError.noHeader
+    }
+    
+    // Get Payload
+    guard let payload = jwt.payload.object else {
+        throw FirebaseAuthProviderError.noPayload
+    }
+    
+    // Validate header's keys and values
+    // get the kid from the header
+    guard let kid = header[KeyIDHeader.name]?.string else {
+        throw FirebaseAuthProviderError.noHeaderKid
+    }
+    
+    // get algorithm from the header
+    guard let alg = header[AlgorithmHeader.name]?.string else {
+        throw FirebaseAuthProviderError.noHeaderAlg
+    }
+    // if algorithm do not match then show error
+    if alg != ALGORITHM {
+        throw FirebaseAuthProviderError.invalidHeaderAlg
+    }
+    
+    // Validate payload keys and payload
+    
+    guard let aud = payload[AudienceClaim.name]?.string else {
+        throw FirebaseAuthProviderError.noPayloadAud
+    }
+    if aud != PROJECT_ID {
+        throw FirebaseAuthProviderError.invalidPayloadAud
+    }
+    
+    guard let iss = payload[IssuerClaim.name]?.string else {
+        throw FirebaseAuthProviderError.noPayloadIss
+    }
+    if iss != "https://securetoken.google.com/\(PROJECT_ID)" {
+        throw FirebaseAuthProviderError.invalidPayloadIss
+    }
+    
+    guard let sub = payload[SubjectClaim.name]?.string else {
+        throw FirebaseAuthProviderError.noPayloadSub
+    }
+    if sub == "" || sub.characters.count > 128  {
+        throw FirebaseAuthProviderError.invalidPayloadSub
+    }
+    
+    guard let exp = payload[ExpirationTimeClaim.name]?.double else {
+        throw FirebaseAuthProviderError.noPayloadExp
+    }
+    // exp (expiration time) in seconds Must be in the future.
+    if (Date(timeIntervalSince1970: exp) < Date()) {
+        throw FirebaseAuthProviderError.invalidPayloadExp
+    }
+    
+    guard let iat = payload[IssuedAtClaim.name]?.double else {
+        throw FirebaseAuthProviderError.noPayloadIat
+    }
+    // iat (issued-at time) in seconds Must be in the past.
+    if (Date(timeIntervalSince1970: iat) >= Date()) {
+        throw FirebaseAuthProviderError.invalidPayloadIat
+    }
+    
+    // fetch all public keys
+    try fetchPublicKeys()
+    
+    // check if publicKeys exists
+    guard let keyPair = publicKeys else {
+        throw FirebaseAuthProviderError.noPublicKeysFetched
+    }
+    
+    guard let kidValue = keyPair[kid] else {
+        throw FirebaseAuthProviderError.noPublicKeysFetched
+    }
+    
+    let signer: Signer
+    do {
+        signer = try RS256(cert: kidValue)
+    } catch {
+        throw FirebaseAuthProviderError.noJWTSigner
+    }
+    
+    do {
+        try jwt.verifySignature(using: signer)
+        // Successfully verified if got here
+        print("Successfully verified")
+    } catch {
+        // To DO
+        throw FirebaseAuthProviderError.noVerifiedJWT
     }
 }
 
-verifyIDToken(idToken: idToken)
+
+try verifyIDToken(idToken: idToken)

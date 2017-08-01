@@ -11,10 +11,21 @@ import Vapor
 public final class Provider: Vapor.Provider {
     public static let repositoryName = "firebase-auth-provider"
     
-    public init() {}
+    public let projectId: String
+    public init(projectId: String) {
+        self.projectId = projectId
+    }
     
     public convenience init(config: Config) throws {
-        self.init()
+        guard let firebaseAuthConfig = config["firebaseauth"] else {
+            throw ConfigError.missingFile["firebaseauth"]
+        }
+        
+        guard let projectId = firebaseAuthConfig["projectId"]?.string else {
+            throw ConfigError.missing(key: ["projectId"], file: "firebaseauth", desiredType: String.self)
+        }
+        
+        self.init(projectId: projectId)
     }
     
     public func boot(_ config: Config) throws {}
