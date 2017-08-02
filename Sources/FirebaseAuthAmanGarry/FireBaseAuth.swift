@@ -11,6 +11,22 @@ import JWT
 
 public final class FirebaseAuth {
     
+//    var projectId : String
+    
+//    public init(config: Config) throws {
+//        guard let firebaseAuthConfig = config["firebaseauth"] else {
+//            throw ConfigError.missingFile("firebaseauth")
+//        }
+//        print("Config: FirebaseAuth: \(firebaseAuthConfig)")
+//        
+//        guard let projectId = firebaseAuthConfig["projectId"]?.string else {
+//            throw ConfigError.missing(key: ["projectId"], file: "firebaseauth", desiredType: String.self)
+//        }
+//        
+//        self.projectId = projectId
+//        
+//        print("ProjectId: FirebaseAuth: \(projectId)")
+//    }
     
     // Valid Algorithm for FireBase Token  verification
     private let ALGORITHM = "RS256"

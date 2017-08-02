@@ -10,10 +10,14 @@ import HTTP
 
 public final class FirebaseAuthMiddleware: Middleware {
     
+    
+    let projectId : String
+    
     let firebaseAuth : FirebaseAuth
     
-    public init() {
+    public init(projectId: String) {
         firebaseAuth = FirebaseAuth()
+        self.projectId = projectId
     }
     
     public func respond(to request: Request, chainingTo next: Responder) throws -> Response {
@@ -21,6 +25,8 @@ public final class FirebaseAuthMiddleware: Middleware {
         let response = try next.respond(to: request)
         
         print(response)
+        
+        print("ProjectId: Middleware: \(projectId)")
         
         //
         
