@@ -11,12 +11,16 @@ import HTTP
 
 public final class FirebaseAuthMiddleware: Middleware {
     
-    let firebaseAuth            :   FirebaseAuth
-    let firebaseProjectId       :   String
+    
+    internal private(set) var firebaseProjectId :   String
+    
+    let firebaseAuth    :   FirebaseAuth
     
     public init(with firebaseProjectId: String) {
+        print("In Middleware init")
         firebaseAuth = FirebaseAuth()
         self.firebaseProjectId = firebaseProjectId
+        print("Exit middleware init")
     }
     
     public func respond(to request: Request, chainingTo next: Responder) throws -> Response {

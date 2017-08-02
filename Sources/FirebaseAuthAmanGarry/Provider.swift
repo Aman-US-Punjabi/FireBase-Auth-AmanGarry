@@ -21,20 +21,15 @@ public final class Provider: Vapor.Provider {
         guard let firebaseAuthConfig = config["firebaseauth"] else {
             throw ConfigError.missingFile("firebaseauth")
         }
-        print("Config: Provider: \(firebaseAuthConfig)")
         
         guard let projectId = firebaseAuthConfig["projectId"]?.string else {
             throw ConfigError.missing(key: ["projectId"], file: "firebaseauth", desiredType: String.self)
         }
         
-        print("ProjectId: Provider: \(projectId)")
         self.init(projectId: projectId)
     }
     
-    public func boot(_ config: Config) throws {
-//        let firebaseAuthMiddleware = try FirebaseAuthMiddleware(config: config)
-//        config.addConfigurable(middleware: FirebaseAuthMiddleware.init, name: "firebaseauth")
-    }
+    public func boot(_ config: Config) throws {}
     
     // Called to prepare the Droplet.
     public func boot(_ drop: Droplet) throws {

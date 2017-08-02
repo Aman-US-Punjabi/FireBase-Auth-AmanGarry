@@ -8,11 +8,17 @@
 
 import Vapor
 
+private let firebaseProjectIdKey = "firbase-project-id"
+
 extension Droplet {
+    
     public internal(set) var firebaseProjectId: String? {
-        get { return self.firebaseProjectId }
+        get {
+            return storage[firebaseProjectIdKey] as? String
+        }
         set {
-            self.firebaseProjectId = newValue
+            print("In drop set firebase project id. with new Value: \(newValue)")
+            storage[firebaseProjectIdKey] = newValue
         }
     }
 }
