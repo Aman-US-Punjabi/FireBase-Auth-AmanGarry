@@ -11,8 +11,8 @@ import HTTP
 
 public final class FirebaseAuthMiddleware: Middleware {
     
-    var firebaseAuth            :   FirebaseAuth
-    var firebaseProjectId       :   String
+    let firebaseAuth            :   FirebaseAuth
+    let firebaseProjectId       :   String
     
     public init(with firebaseProjectId: String) {
         firebaseAuth = FirebaseAuth()
@@ -26,7 +26,7 @@ public final class FirebaseAuthMiddleware: Middleware {
         print(response)
         
         //
-        
+        print("Project Id in Middleware: \(firebaseProjectId)")
         try firebaseAuth.verifyIDToken(projectId: firebaseProjectId, idToken: "asdadsasd")
         
         return response
