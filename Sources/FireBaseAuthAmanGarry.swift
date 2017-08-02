@@ -28,7 +28,7 @@ public final class FirebaseAuthAmanGarry {
     private func getPublicKeysExpireDateFrmCacheControl(from cacheControl: String) throws -> Date? {
         let cacheControlParts = cacheControl.components(separatedBy: ", ")
         for part in cacheControlParts {
-            let subParts = part.split(separator: "=")
+            let subParts = part.components(separatedBy: "=")
             if subParts[0] == "max-age" {
                 if let maxAge = Double(subParts[1].lowercased()) {
                     print(maxAge)
