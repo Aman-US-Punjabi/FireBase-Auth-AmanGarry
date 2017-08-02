@@ -11,7 +11,8 @@ import Vapor
 public final class Provider: Vapor.Provider {
     public static let repositoryName = "firebase-auth-provider"
     
-    let projectId : String
+    public let projectId : String?
+    
     public init(projectId: String) {
         self.projectId  = projectId
     }
@@ -32,11 +33,13 @@ public final class Provider: Vapor.Provider {
     
     public func boot(_ config: Config) throws {
 //        let firebaseAuthMiddleware = try FirebaseAuthMiddleware(config: config)
-        config.addConfigurable(middleware: FirebaseAuthMiddleware.init, name: "firebaseauth")
+//        config.addConfigurable(middleware: FirebaseAuthMiddleware.init, name: "firebaseauth")
     }
     
     // Called to prepare the Droplet.
-    public func boot(_ drop: Droplet) throws {}
+    public func boot(_ drop: Droplet) throws {
+        drop.firebaseProjectId = self.projectId
+    }
     
     /// Called after the Droplet has completed
     /// initialization and all provided items

@@ -9,27 +9,8 @@ import Vapor
 import HTTP
 import JWT
 
-public final class FirebaseAuth : ConfigInitializable {
-    
-    var projectId : String = ""
+public final class FirebaseAuth {
 
-    init() { }
-    
-    public init(config: Config) throws {
-        guard let firebaseAuthConfig = config["firebaseauth"] else {
-            throw ConfigError.missingFile("firebaseauth")
-        }
-        print("Config: FirebaseAuth: \(firebaseAuthConfig)")
-        
-        guard let projectId = firebaseAuthConfig["projectId"]?.string else {
-            throw ConfigError.missing(key: ["projectId"], file: "firebaseauth", desiredType: String.self)
-        }
-        
-        self.projectId = projectId
-        
-        print("ProjectId: FirebaseAuth: \(projectId)")
-    }
-    
     // Valid Algorithm for FireBase Token  verification
     private let ALGORITHM = "RS256"
     
@@ -116,7 +97,7 @@ public final class FirebaseAuth : ConfigInitializable {
         }
     }
     
-    func verifyIDToken(idToken: String) throws {
+    func verifyIDToken(projectId: String, idToken: String) throws {
         if idToken == "" {
             // TO DO Thow error Invalid IdToken
             throw FirebaseAuthProviderError.invalidToken

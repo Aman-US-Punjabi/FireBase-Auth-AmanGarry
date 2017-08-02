@@ -11,17 +11,12 @@ import HTTP
 
 public final class FirebaseAuthMiddleware: Middleware {
     
-    var firebaseAuth : FirebaseAuth
+    var firebaseAuth            :   FirebaseAuth
+    var firebaseProjectId       :   String
     
-    public init() {
+    public init(with firebaseProjectId: String) {
         firebaseAuth = FirebaseAuth()
-    }
-    
-    public convenience init(config: Config) throws {
-        
-        self.init()
-        
-        self.firebaseAuth = try FirebaseAuth(config: config)
+        self.firebaseProjectId = firebaseProjectId
     }
     
     public func respond(to request: Request, chainingTo next: Responder) throws -> Response {
@@ -32,7 +27,7 @@ public final class FirebaseAuthMiddleware: Middleware {
         
         //
         
-        try firebaseAuth.verifyIDToken(idToken: "asdasdasdasd")
+        try firebaseAuth.verifyIDToken(projectId: firebaseProjectId, idToken: "asdadsasd")
         
         return response
     }
