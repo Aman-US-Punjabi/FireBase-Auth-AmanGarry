@@ -11,34 +11,17 @@ import HTTP
 
 public final class FirebaseAuthMiddleware: Middleware {
     
-    
-    var projectId : String
-    
     var firebaseAuth : FirebaseAuth
     
     public init() {
         firebaseAuth = FirebaseAuth()
-        self.projectId = ""
     }
     
     public convenience init(config: Config) throws {
         
-        guard let firebaseAuthConfig = config["firebaseauth"] else {
-            throw ConfigError.missingFile("firebaseauth")
-        }
-        print("Config: Middleware: \(firebaseAuthConfig)")
-        
-        guard let projectId = firebaseAuthConfig["projectId"]?.string else {
-            throw ConfigError.missing(key: ["projectId"], file: "firebaseauth", desiredType: String.self)
-        }
-        
         self.init()
         
-        self.projectId = projectId
-        
-        print("ProjectId: Middleware: \(projectId)")
-        
-        firebaseAuth = FirebaseAuth()
+        self.firebaseAuth = try FirebaseAuth(config: config)
     }
     
     public func respond(to request: Request, chainingTo next: Responder) throws -> Response {
@@ -46,8 +29,6 @@ public final class FirebaseAuthMiddleware: Middleware {
         let response = try next.respond(to: request)
         
         print(response)
-        
-        print("ProjectId: Middleware: \(projectId)")
         
         //
         
