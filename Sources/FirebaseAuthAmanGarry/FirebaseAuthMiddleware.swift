@@ -15,6 +15,11 @@ public final class FirebaseAuthMiddleware: Middleware {
     
     let firebaseAuth : FirebaseAuth
     
+    public init() {
+        firebaseAuth = FirebaseAuth()
+        self.projectId = ""
+    }
+    
     public init(projectId: String) {
         firebaseAuth = FirebaseAuth()
         self.projectId = projectId
