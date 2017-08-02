@@ -32,7 +32,7 @@ public final class FirebaseAuthMiddleware: Middleware {
         
         //
         
-        //        try firebaseAuthAmanGarry.verifyIDToken(projectId: <#T##String#>, idToken: <#T##String#>)
+        try firebaseAuth.verifyIDToken(idToken: "asdasdasdasd")
         
         return response
     }
