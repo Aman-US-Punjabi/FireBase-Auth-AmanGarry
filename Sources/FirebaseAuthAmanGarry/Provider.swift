@@ -31,7 +31,7 @@ public final class Provider: Vapor.Provider {
     }
     
     public func boot(_ config: Config) throws {
-        let firebaseAuthMiddleware = FirebaseAuthMiddleware(projectId: projectId)
+        let firebaseAuthMiddleware = try FirebaseAuthMiddleware(config: config)
         config.addConfigurable(middleware: firebaseAuthMiddleware, name: "firebaseauth")
     }
     
