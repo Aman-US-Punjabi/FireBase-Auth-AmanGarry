@@ -10,10 +10,10 @@ import HTTP
 
 public final class FirebaseAuthMiddleware: Middleware {
     
-    let firebaseAuthAmanGarry : FirebaseAuthAmanGarry
+    let firebaseAuth : FirebaseAuth
     
     public init() {
-        firebaseAuthAmanGarry = FirebaseAuthAmanGarry()
+        firebaseAuth = FirebaseAuth()
     }
     
     public func respond(to request: Request, chainingTo next: Responder) throws -> Response {

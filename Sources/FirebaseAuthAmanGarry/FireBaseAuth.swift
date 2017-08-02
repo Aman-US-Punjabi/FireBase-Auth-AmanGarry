@@ -1,5 +1,5 @@
 //
-//  FirebaseAuthAmanGarry.swift
+//  FirebaseAuth.swift
 //  FireBase-Auth-AmanGarry
 //
 //  Created by Gary Singh on 7/31/17.
@@ -9,7 +9,7 @@ import Vapor
 import HTTP
 import JWT
 
-public final class FirebaseAuthAmanGarry {
+public final class FirebaseAuth {
     
     
     // Valid Algorithm for FireBase Token  verification
