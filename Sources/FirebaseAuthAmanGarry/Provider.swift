@@ -31,8 +31,8 @@ public final class Provider: Vapor.Provider {
     }
     
     public func boot(_ config: Config) throws {
-        let firebaseAuthMiddleware = try FirebaseAuthMiddleware(config: config)
-        config.addConfigurable(middleware: firebaseAuthMiddleware, name: "firebaseauth")
+//        let firebaseAuthMiddleware = try FirebaseAuthMiddleware(config: config)
+        config.addConfigurable(middleware: FirebaseAuthMiddleware.init, name: "firebaseauth")
     }
     
     // Called to prepare the Droplet.
