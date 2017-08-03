@@ -27,8 +27,11 @@ public final class FirebaseAuthMiddleware: Middleware {
         
         let response = try next.respond(to: request)
         
-        print(response)
-        
+        guard let token = request.header?.bearer else {
+            print("Header has no token.")
+            throw FirebaseAuthProviderError.invalidToken
+        }
+        print("token: \(token)")
         //
         print("Project Id in Middleware: \(firebaseProjectId)")
         try firebaseAuth.verifyIDToken(projectId: firebaseProjectId, idToken: "asdadsasd")
